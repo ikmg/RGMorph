@@ -1,4 +1,4 @@
-from kmorph import Morph
+from old_morph import Morph
 
 
 morph = Morph()
