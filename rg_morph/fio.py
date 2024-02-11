@@ -34,15 +34,16 @@ class FIO:
                 self.gender = Gender.MALE
             elif keywords['gender'] == 'female':
                 self.gender = Gender.FEMALE
-        # дополнительные правила
+        # дополнительные правила склонения
         self.rules = '{}/rules.json'.format(os.path.dirname(os.path.abspath(__file__)))
-        # проверка
+        # проверка значений
         if not self.lastname and not self.firstname and not self.middlename:
             raise ValueError('не указаны Фамилия, Имя и Отчество')
 
-    def morph(self, case: str, to_string=False):
+    def morph(self, case: str, to_string: bool = False):
         """
         Изменение склонения.
+        param: case: str - падеж из словаря cases
         param: to_string: bool - результат склонения конкатенирует в строку
         """
         petrovich = Petrovich(rules_path=self.rules)

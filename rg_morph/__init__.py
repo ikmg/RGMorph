@@ -8,23 +8,17 @@ class Morph:
     """
 
     def __init__(self, **keywords):
-        self.fio = self.set_fio(**keywords)
-        self.rank = Text(keywords['rank']) if 'rank' in keywords else None
-        self.post = Text(keywords['post']) if 'post' in keywords else None
-        self.unit = Text(keywords['unit']) if 'unit' in keywords else None
-        self.subject = Text(keywords['subject']) if 'subject' in keywords else None
-        self.text = None
-
-    def set_fio(self, **keywords):
-        """
-        Установка сведений о персоне
-        """
-        return FIO(
+        self.fio = FIO(
             lastname=keywords['lastname'] if 'lastname' in keywords else None,
             firstname=keywords['firstname'] if 'firstname' in keywords else None,
             middlename=keywords['middlename'] if 'middlename' in keywords else None,
             gender=keywords['gender'] if 'gender' in keywords else None
         )
+        self.rank = Text(keywords['rank']) if 'rank' in keywords else None
+        self.post = Text(keywords['post']) if 'post' in keywords else None
+        self.unit = Text(keywords['unit']) if 'unit' in keywords else None
+        self.subject = Text(keywords['subject']) if 'subject' in keywords else None
+        self.text = None
 
     def phrase(self, case: str, text: str, ignore_text_in_quotes: bool = False):
         """

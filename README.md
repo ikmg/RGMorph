@@ -66,7 +66,7 @@ print(fio.morph('предложный', False))
 
 Синтаксис:
 
-`employee.fio.morph(case: str, to_string=False)`
+`fio.morph(case: str, to_string: bool = False)`
 - param: **case**: str - _наименование падежа из словаря cases;_
 - param: **to_string**: bool - _результат склонения ФИО конкатенирует в строку._
 
@@ -93,7 +93,7 @@ print(text.morph('предложный', False))
 
 Синтаксис: 
 
-`morph.phrase(case: str, ignore_text_in_quotes: bool = False)`
+`text.morph(case: str, ignore_text_in_quotes: bool = False)`
 - _param: **case**: str - наименование падежа для склонения;_
 - _param: **ignore_text_in_quotes**: bool - игнорировать (не склонять) текст в кавычках._
 
@@ -142,7 +142,7 @@ employee = Morph(**person_item)
 Пример:
 ```
 employee.fio.morph('родительный', True)
-employee.rank.morph('дательный', False
+employee.rank.morph('дательный', False)
 employee.subject.morph('винительный', True)
 ```
 
