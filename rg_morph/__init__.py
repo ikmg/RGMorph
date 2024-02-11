@@ -7,28 +7,21 @@ class Morph:
     Класс для обратной совместимости с предыдущей версией
     """
 
-    def __init__(self):
+    def __init__(self, **keywords):
+        self.fio = self.set_fio(**keywords)
+        self.rank = Text(keywords['rank']) if 'rank' in keywords else None
+        self.post = Text(keywords['post']) if 'post' in keywords else None
+        self.unit = Text(keywords['unit']) if 'unit' in keywords else None
+        self.subject = Text(keywords['subject']) if 'subject' in keywords else None
         self.text = None
-        self.person = None
 
-    def fio(self, case: str, **keywords):
-        """
-        Склонение ФИО.
-        param: case: str - наименование падежа из словаря cases
-        **keywords: все необязательные, но все не могут быть пустыми
-        param: lastname: str - фамилия
-        param: firstname: str - имя
-        param: middlename: str - отчество
-        param: gender: str (male/female) - пол
-        param: to_string: bool - результат склонения конкатенирует в строку
-        """
-        self.person = FIO(
+    def set_fio(self, **keywords):
+        return FIO(
             lastname=keywords['lastname'] if 'lastname' in keywords else None,
             firstname=keywords['firstname'] if 'firstname' in keywords else None,
             middlename=keywords['middlename'] if 'middlename' in keywords else None,
             gender=keywords['gender'] if 'gender' in keywords else None
         )
-        return self.person.morph(case, keywords['to_string'] if 'to_string' in keywords else False)
 
     def phrase(self, case: str, text: str, ignore_text_in_quotes: bool = False):
         """

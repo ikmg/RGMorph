@@ -89,7 +89,7 @@ class Text:
         result = tmp.split(' ')
         return result
 
-    def morph(self, case: str, ignore_text_in_quotes=False):
+    def morph(self, case: str, ignore_text_in_quotes: bool = False):
         """
         Изменение склонения текста.
         param: case: str - наименование падежа из словаря cases

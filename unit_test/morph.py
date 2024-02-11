@@ -1,7 +1,16 @@
 from rg_morph import Morph
 
 
-morph = Morph()
-print(morph.fio('родительный', middlename='Георгиевич', to_string=True))
-print(morph.phrase('родительный', 'ФГКУ "Главный центр Оршанско-Хинганский Федерации"', True))
+person_item = {
+    'lastname': 'Фамилия',
+    'firstname': 'Имя',
+    'middlename': 'Отчество',
+    'gender': 'male',
+    'rank': 'рядовой',
+    'post': 'стрелок 1 взвода 1 роты',
+    'unit': '1 батальон охраны',
+    'subject': 'войсковая часть 0000'
+}
+
+morph = Morph(**person_item)
 q=1
