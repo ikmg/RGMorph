@@ -1,7 +1,8 @@
 import os
 
 from petrovich.main import Petrovich
-from petrovich.enums import Case, Gender
+
+from .config import petrovich_cases, petrovich_genders
 
 
 class FIO:
@@ -14,59 +15,62 @@ class FIO:
     param: gender: str (male/female) - пол
     """
 
-    # словарь с падежами и их классами для petrovich
-    cases = {
-        'родительный': Case.GENITIVE,
-        'дательный': Case.DATIVE,
-        'винительный': Case.ACCUSATIVE,
-        'творительный': Case.INSTRUMENTAL,
-        'предложный': Case.PREPOSITIONAL
-    }
-
     def __init__(self, **keywords: str):
+        # скрытые атрибуты
+        _ = os.path.dirname(os.path.abspath(__file__))
+        self._rules_ = '{}/rules.json'.format(_)  # дополнительные правила склонения
+        self._morpheus_ = Petrovich(rules_path=self._rules_)
         # данные
-        self.lastname = keywords['lastname'] if 'lastname' in keywords else None
-        self.firstname = keywords['firstname'] if 'firstname' in keywords else None
-        self.middlename = keywords['middlename'] if 'middlename' in keywords else None
-        self.gender = None
-        if 'gender' in keywords:
-            if keywords['gender'] == 'male':
-                self.gender = Gender.MALE
-            elif keywords['gender'] == 'female':
-                self.gender = Gender.FEMALE
-        # дополнительные правила склонения
-        self.rules = '{}/rules.json'.format(os.path.dirname(os.path.abspath(__file__)))
-        # проверка значений
-        if not self.lastname and not self.firstname and not self.middlename:
-            raise ValueError('не указаны Фамилия, Имя и Отчество')
+        self.lastname = keywords['lastname'] if 'lastname' in keywords else ''
+        self.firstname = keywords['firstname'] if 'firstname' in keywords else ''
+        self.middlename = keywords['middlename'] if 'middlename' in keywords else ''
+        self.gender = petrovich_genders[keywords['gender']] if 'gender' in keywords else None
 
-    def morph(self, case: str, to_string: bool = False):
+    def _morph_ln_(self, case: str) -> str:
+        """Склонение фамилии"""
+        return self._morpheus_.lastname(
+            value=self.lastname.strip(),
+            case=petrovich_cases[case],
+            gender=self.gender
+        ) if self.lastname else ''
+
+    def _morph_fn_(self, case: str) -> str:
+        """Склонение имени"""
+        return self._morpheus_.firstname(
+            value=self.firstname.strip(),
+            case=petrovich_cases[case],
+            gender=self.gender
+        ) if self.firstname else ''
+
+    def _morph_mn_(self, case: str) -> str:
+        """Склонение отчества"""
+        return self._morpheus_.middlename(
+            value=self.middlename.strip(),
+            case=petrovich_cases[case],
+            gender=self.gender
+        ) if self.middlename else ''
+
+    def morph(self, case: str, to_string: bool = True):
         """
         Изменение склонения.
         param: case: str - падеж из словаря cases
         param: to_string: bool - результат склонения конкатенирует в строку
         """
-        petrovich = Petrovich(rules_path=self.rules)
+
+        # исключение если падеж отсутствует в словаре
+        if case not in petrovich_cases:
+            raise ValueError('Unknown case <{}>'.format(case))
+
+        # результирующий словарь
         result = {
-            'lastname': self.lastname,
-            'firstname': self.firstname,
-            'middlename': self.middlename
+            'lastname': self._morph_ln_(case),
+            'firstname': self._morph_fn_(case),
+            'middlename': self._morph_mn_(case)
         }
-        if case in self.cases:
-            if self.lastname:
-                result['lastname'] = petrovich.lastname(self.lastname.strip(), self.cases[case], self.gender)
-            if self.firstname:
-                result['firstname'] = petrovich.firstname(self.firstname.strip(), self.cases[case], self.gender)
-            if self.middlename:
-                result['middlename'] = petrovich.middlename(self.middlename.strip(), self.cases[case], self.gender)
-        else:
-            raise ValueError('неизвестный падеж <{}>, параметры необходимо указывать в именительном падеже'.format(case))
+
         # конкатенация результата
-        if to_string:
-            return '{} {} {}'.format(
-                result['lastname'] if result['lastname'] else '',
-                result['firstname'] if result['firstname'] else '',
-                result['middlename'] if result['middlename'] else ''
-            ).replace('  ', ' ').strip()
-        else:
-            return result
+        return result if not to_string else '{}{}{}'.format(
+                result['lastname'],
+                ' {}'.format(result['firstname']) if result['firstname'] else result['firstname'],
+                ' {}'.format(result['middlename']) if result['middlename'] else result['middlename']
+            )
